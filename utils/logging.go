@@ -8,17 +8,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// FunctionName returns the name of the function that called it.
-// func FunctionName(indent ...int) string {
-// 	pc, _, _, _ := runtime.Caller(1)
-// 	elements := strings.Split(runtime.FuncForPC(pc).Name(), ".")
-// 	retv := elements[len(elements)-1]
-// 	if len(indent) != 0 {
-// 		retv = fmt.Sprintf("%s%s", strings.Repeat(" ", indent[0]), retv)
-// 	}
-// 	return retv
-// }
-
 func LogIfError(msg interface{}) {
 	if msg == nil {
 		return

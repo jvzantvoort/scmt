@@ -13,7 +13,7 @@ import (
 
 var (
 	Configdir  string
-	Logfile     string
+	Logfile    string
 	Engineer   string
 	Message    string
 	OutputJSON bool
@@ -82,7 +82,6 @@ func init() {
 
 	rootCmd.PersistentFlags().BoolP("json", "J", false, "JSON Output")
 	viper.BindPFlag("json", rootCmd.PersistentFlags().Lookup("json"))
-
 
 }
 

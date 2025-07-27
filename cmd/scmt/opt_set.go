@@ -25,7 +25,6 @@ func handleSetCmd(cmd *cobra.Command, args []string) {
 	log.Debugf("%s: start", cmd.Use)
 	defer log.Debugf("%s: end", cmd.Use)
 
-
 	if len(args) != 2 {
 		fmt.Printf("USAGE:\n\n\t%s <name> <value>\n\n", os.Args[0])
 		fmt.Printf("%#v\n", os.Args)

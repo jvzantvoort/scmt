@@ -1,7 +1,6 @@
 package main
 
 import (
-
 	"github.com/jvzantvoort/scmt/config"
 	"github.com/jvzantvoort/scmt/data"
 	"github.com/jvzantvoort/scmt/messages"
@@ -29,29 +28,6 @@ func handleInitCmd(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	/*
-
-		log.Debugf("Engineer: %s", Engineer)
-		log.Debugf("Message: %s", Message)
-		log.Debugf("Configdir: %s", Configdir)
-		log.Debugf("Logfile: %s", Logfile)
-		log.Debugf("OutputJSON: %v", OutputJSON)
-
-			ProjectType := GetString(*cmd, "type")
-			project_description := GetString(*cmd, "description")
-
-			PrintFull, _ := cmd.Flags().GetBool("full")
-
-			proj := project.NewProject(ProjectName)
-			proj.SetDescription(project_description)
-			err := proj.InitializeProject(ProjectType, true)
-			if err != nil {
-				utils.Fatalf("Encountered error: %q", err)
-			} else {
-				utils.Debugf("InitializeProject completed")
-
-			}
-	*/
 }
 
 func init() {
