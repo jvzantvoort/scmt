@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/jvzantvoort/scmt/config"
+	"github.com/jvzantvoort/scmt/logger"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -23,6 +24,7 @@ var (
 type DataElementValue struct {
 	Value    string    `json:"value"`
 	Engineer string    `json:"engineer"`
+	Message  string    `json:"message"`
 	Changed  time.Time `json:"changed"`
 }
 
@@ -33,6 +35,7 @@ type DataElement struct {
 
 type Data struct {
 	Config   config.Config `json:"-"`
+	logger.Records `json:"-"` // Embedded logger records for change tracking
 	Elements []DataElement `json:"elements"`
 }
 
@@ -46,45 +49,84 @@ func (d Data) Get(option string) (*DataElementValue, error) {
 		// return value, engineer, changed and success
 		return &row.Value, nil
 	}
-	return retv, fmt.Errorf("Option %s not found", option)
+	return retv, fmt.Errorf("option %s not found", option)
 }
 
-func (d *Data) Set(option, value, engineer string) error {
+func (d Data) Log(option, value, engineer, message string) error {
+	log, err := logger.New(d.Config.Logfile)
+	if err != nil {
+		return err
+	}
+	log.Add(option, value, engineer, message)
+	return log.Save()
+}
+
+func (d *Data) Set(option, value, engineer, message string) (bool, error) {
 	log.Debugf("Set %s to %s, start", option, value)
 	defer log.Debugf("Set %s to %s, end", option, value)
+	log.Debugf("   By:     %s", engineer)
+	log.Debugf("   Reason: %s", message)
 
 	now := time.Now().UTC()
 	changed := false
+	found := false
 
 	for i, element := range d.Elements {
 		if element.Option == option {
-			d.Elements[i].Value.Value = value
-			d.Elements[i].Value.Engineer = engineer
-			d.Elements[i].Value.Changed = now
-			changed = true
+			log.Debugf("found %s", option)
+			orgval := d.Elements[i].Value.Value
+			if orgval == value {
+				log.Debugf("value is unchanged")
+			} else {
+				log.Debugf("value changed from %s to %s", orgval, value)
+				d.Log(option, value, engineer, message)
+				d.Elements[i].Value.Value = value
+				d.Elements[i].Value.Engineer = engineer
+				d.Elements[i].Value.Message = message
+				d.Elements[i].Value.Changed = now
+				changed = true
+			}
+			found = true
 		}
 	}
-	if changed {
-		return nil
+
+	// add if not found
+	if !found {
+
+		row := DataElement{}
+		row.Option = option
+		row.Value.Value = value
+		row.Value.Engineer = engineer
+		row.Value.Changed = now
+		row.Value.Message = message
+		d.Log(option, value, engineer, message)
+		d.Elements = append(d.Elements, row)
+		changed = true
 	}
 
-	row := DataElement{}
-	row.Option = option
-	row.Value.Value = value
-	row.Value.Engineer = engineer
-	row.Value.Changed = now
-	d.Elements = append(d.Elements, row)
+	return changed, nil
+}
 
+func (d *Data) SafeSet(option, value, engineer, message string) error {
+	log.Debugf("Set %s to %s, start", option, value)
+	defer log.Debugf("Set %s to %s, end", option, value)
+	changed, err := d.Set(option, value, engineer, message)
+	if err != nil {
+		return err
+	}
+	if changed {
+		return d.Save()
+	}
 	return nil
 }
 
 func (d *Data) Init(engineer string) error {
 	log.Debugf("Init data structure, start")
 	defer log.Debugf("Init data structure, end")
-	fmt.Printf("%#v\n", defaultData)
 
 	for option, val := range defaultData {
-		if err := d.Set(option, val, engineer); err != nil {
+		_, err := d.Set(option, val, engineer, "Initialize")
+		if err != nil {
 			return err
 		}
 	}

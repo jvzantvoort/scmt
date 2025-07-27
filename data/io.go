@@ -47,8 +47,6 @@ func (d Data) Dumper(outputtype string, writer io.Writer) error {
 	utils.LogStart()
 	defer utils.LogEnd()
 
-	utils.LogVariable("lala", d.Elements)
-
 	mdata := map[string]string{}
 	for indx, element := range d.Elements {
 		utils.LogVariable(indx, element)
@@ -65,7 +63,7 @@ func (d Data) Dumper(outputtype string, writer io.Writer) error {
 		}
 	} else if outputtype == "table" {
 		table := tablewriter.NewWriter(writer)
-		table.Header([]string{"Name", "Value", "Engineer", "Changed"})
+		table.Header([]string{"Name", "Value", "Engineer", "Changed", "Message"})
 		tabledata := [][]string{}
 
 		for _, element := range d.Elements {
@@ -73,7 +71,8 @@ func (d Data) Dumper(outputtype string, writer io.Writer) error {
 			cols = append(cols, element.Option)
 			cols = append(cols, element.Value.Value)
 			cols = append(cols, element.Value.Engineer)
-			cols = append(cols, element.Value.Changed.Format("2006-01-02 15:04:05"))
+			cols = append(cols, element.Value.Changed.Format("2006-01-02 15:04"))
+			cols = append(cols, element.Value.Message)
 			tabledata = append(tabledata, cols)
 		}
 		table.Bulk(tabledata)
@@ -132,6 +131,7 @@ func (data Data) Save() error {
 
 	configfile, _ := data.ConfigFile()
 	utils.Debugf("project file: %s", configfile)
+	os.Rename(configfile, configfile+".bck")
 
 	filehandle, err := os.OpenFile(configfile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
