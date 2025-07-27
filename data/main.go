@@ -34,9 +34,9 @@ type DataElement struct {
 }
 
 type Data struct {
-	Config   config.Config `json:"-"`
-	logger.Records `json:"-"` // Embedded logger records for change tracking
-	Elements []DataElement `json:"elements"`
+	Config         config.Config `json:"-"`
+	logger.Records `json:"-"`    // Embedded logger records for change tracking
+	Elements       []DataElement `json:"elements"`
 }
 
 func (d Data) Get(option string) (*DataElementValue, error) {
