@@ -1,0 +1,2 @@
+# scmt
+maintain name -> vars
