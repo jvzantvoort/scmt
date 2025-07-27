@@ -13,7 +13,7 @@ import (
 
 // Content missing godoc.
 //
-//go:embed long/* use/* short/* config/*
+//go:embed long/* use/* short/* config/* version/*
 var Content embed.FS
 
 func GetContent(folder, name string) string {
@@ -25,6 +25,11 @@ func GetContent(folder, name string) string {
 		msgstr = []byte("undefined")
 	}
 	return strings.TrimSuffix(string(msgstr), "\n")
+
+}
+
+func GetVersion() string {
+	return GetContent("version", "content")
 
 }
 
