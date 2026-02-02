@@ -1,0 +1,31 @@
+{
+  "server": {
+    "type": "{{.Config.TYPE}}",
+    "owner": "{{.Config.OWNER}}",
+    {{if .Config.ENVIRONMENT}}"environment": "{{.Config.ENVIRONMENT}}",{{else}}"environment": "development",{{end}}
+    "timezone": "{{.Config.TIMEZONE}}",
+    "generated": {
+      "timestamp": "{{.Timestamp}}",
+      "engineer": "{{.Engineer}}"
+    }
+  },
+  "location": {
+    "country": "{{.Config.COUNTRY_CODE}}",
+    "region": "{{.Config.REGION_CODE}}"{{if .Config.COMPUTE_ZONE}},
+    "compute": {
+      "zone": "{{.Config.COMPUTE_ZONE}}",
+      "region": "{{.Config.COMPUTE_REGION}}"
+    }{{end}}
+  },
+  "roles": [
+    {{range $i, $role := .Roles}}{{if $i}},{{end}}
+    "{{$role}}"{{end}}
+  ],
+  "features": {
+    "webServer": {{.HasRole "web-server"}},
+    "database": {{.HasRole "database"}},
+    "monitoring": {{.HasRole "monitoring-target"}},
+    "loadBalancer": {{.HasRole "load-balancer"}}
+  },
+  "roleCount": {{len .Roles}}
+}
