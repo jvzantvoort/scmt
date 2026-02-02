@@ -37,6 +37,7 @@ type Data struct {
 	Config         config.Config `json:"-"`
 	logger.Records `json:"-"`    // Embedded logger records for change tracking
 	Elements       []DataElement `json:"elements"`
+	Roles          []string      `json:"roles"`
 }
 
 func (d Data) Get(option string) (*DataElementValue, error) {
@@ -133,9 +134,56 @@ func (d *Data) Init(engineer string) error {
 	return nil
 }
 
+// AddRole adds a role to the roles list if it doesn't already exist
+func (d *Data) AddRole(role, engineer, message string) (bool, error) {
+	// Check if role already exists
+	for _, r := range d.Roles {
+		if r == role {
+			return false, nil // Role already exists, no change
+		}
+	}
+	
+	// Add the role
+	d.Roles = append(d.Roles, role)
+	d.Log("ROLE_ADD", role, engineer, message)
+	return true, nil
+}
+
+// RemoveRole removes a role from the roles list
+func (d *Data) RemoveRole(role, engineer, message string) (bool, error) {
+	for i, r := range d.Roles {
+		if r == role {
+			// Remove the role by slicing
+			d.Roles = append(d.Roles[:i], d.Roles[i+1:]...)
+			d.Log("ROLE_REMOVE", role, engineer, message)
+			return true, nil
+		}
+	}
+	return false, fmt.Errorf("role %s not found", role)
+}
+
+// ListRoles returns a copy of the roles list
+func (d *Data) ListRoles() []string {
+	roles := make([]string, len(d.Roles))
+	copy(roles, d.Roles)
+	return roles
+}
+
+// HasRole checks if a role exists in the roles list
+func (d *Data) HasRole(role string) bool {
+	for _, r := range d.Roles {
+		if r == role {
+			return true
+		}
+	}
+	return false
+}
+
 func New(cfg config.Config) (*Data, error) {
 	retv := &Data{}
 	retv.Config = cfg
+	retv.Elements = make([]DataElement, 0)
+	retv.Roles = make([]string, 0)
 	return retv, nil
 
 }
