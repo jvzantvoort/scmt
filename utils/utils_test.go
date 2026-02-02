@@ -59,7 +59,7 @@ func TestLogIfError(t *testing.T) {
 
 	// Test with non-nil error (should not panic)
 	LogIfError("test error")
-	
+
 	// Since this function only logs, we can't easily test the output
 	// but we can ensure it doesn't panic
 }

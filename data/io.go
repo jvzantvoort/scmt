@@ -75,8 +75,10 @@ func (d Data) Dumper(outputtype string, writer io.Writer) error {
 			cols = append(cols, element.Value.Message)
 			tabledata = append(tabledata, cols)
 		}
-		table.Bulk(tabledata)
-		table.Render()
+		if err := table.Bulk(tabledata); err != nil {
+			return err
+		}
+		return table.Render()
 
 	}
 
@@ -131,7 +133,7 @@ func (data Data) Save() error {
 
 	configfile, _ := data.ConfigFile()
 	utils.Debugf("project file: %s", configfile)
-	os.Rename(configfile, configfile+".bck")
+	_ = os.Rename(configfile, configfile+".bck") // Ignore error if backup fails
 
 	filehandle, err := os.OpenFile(configfile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {

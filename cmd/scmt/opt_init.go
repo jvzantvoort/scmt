@@ -23,8 +23,13 @@ func handleInitCmd(cmd *cobra.Command, args []string) {
 	cfg := config.New()
 
 	if scmto, err := data.New(*cfg); err == nil {
-		scmto.Init(Engineer)
-		scmto.Save()
+		if err := scmto.Init(Engineer); err != nil {
+			log.Errorf("Failed to initialize: %v", err)
+			return
+		}
+		if err := scmto.Save(); err != nil {
+			log.Errorf("Failed to save: %v", err)
+		}
 		return
 	}
 

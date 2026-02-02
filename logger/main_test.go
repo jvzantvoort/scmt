@@ -250,7 +250,7 @@ func TestLogger_Dumper_Table(t *testing.T) {
 	}
 
 	output := buf.String()
-	
+
 	// Check that table contains our data
 	if !strings.Contains(output, "value1") {
 		t.Errorf("Expected table output to contain 'value1', got: %s", output)

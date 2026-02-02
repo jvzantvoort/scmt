@@ -54,12 +54,12 @@ func (d Data) Get(option string) (*DataElementValue, error) {
 }
 
 func (d Data) Log(option, value, engineer, message string) error {
-	log, err := logger.New(d.Config.Logfile)
+	logInstance, err := logger.New(d.Config.Logfile)
 	if err != nil {
 		return err
 	}
-	log.Add(option, value, engineer, message)
-	return log.Save()
+	logInstance.Add(option, value, engineer, message)
+	return logInstance.Save()
 }
 
 func (d *Data) Set(option, value, engineer, message string) (bool, error) {
@@ -80,7 +80,9 @@ func (d *Data) Set(option, value, engineer, message string) (bool, error) {
 				log.Debugf("value is unchanged")
 			} else {
 				log.Debugf("value changed from %s to %s", orgval, value)
-				d.Log(option, value, engineer, message)
+				if err := d.Log(option, value, engineer, message); err != nil {
+					log.Warnf("Failed to log change: %v", err)
+				}
 				d.Elements[i].Value.Value = value
 				d.Elements[i].Value.Engineer = engineer
 				d.Elements[i].Value.Message = message
@@ -100,7 +102,9 @@ func (d *Data) Set(option, value, engineer, message string) (bool, error) {
 		row.Value.Engineer = engineer
 		row.Value.Changed = now
 		row.Value.Message = message
-		d.Log(option, value, engineer, message)
+		if err := d.Log(option, value, engineer, message); err != nil {
+			log.Warnf("Failed to log change: %v", err)
+		}
 		d.Elements = append(d.Elements, row)
 		changed = true
 	}
@@ -142,10 +146,12 @@ func (d *Data) AddRole(role, engineer, message string) (bool, error) {
 			return false, nil // Role already exists, no change
 		}
 	}
-	
+
 	// Add the role
 	d.Roles = append(d.Roles, role)
-	d.Log("ROLE_ADD", role, engineer, message)
+	if err := d.Log("ROLE_ADD", role, engineer, message); err != nil {
+		log.Warnf("Failed to log role addition: %v", err)
+	}
 	return true, nil
 }
 
@@ -155,7 +161,9 @@ func (d *Data) RemoveRole(role, engineer, message string) (bool, error) {
 		if r == role {
 			// Remove the role by slicing
 			d.Roles = append(d.Roles[:i], d.Roles[i+1:]...)
-			d.Log("ROLE_REMOVE", role, engineer, message)
+			if err := d.Log("ROLE_REMOVE", role, engineer, message); err != nil {
+				log.Warnf("Failed to log role removal: %v", err)
+			}
 			return true, nil
 		}
 	}

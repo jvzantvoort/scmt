@@ -12,7 +12,7 @@ import (
 // setupTestEnvironment creates a temporary directory and sets up test configuration
 func setupTestEnvironment(t *testing.T) string {
 	tmpDir := t.TempDir()
-	
+
 	// Set viper values for testing
 	viper.Set("configdir", tmpDir)
 	viper.Set("logfile", filepath.Join(tmpDir, "test.log"))
@@ -37,12 +37,12 @@ func initializeTestData(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create data: %v", err)
 	}
-	
+
 	err = d.Init("testuser")
 	if err != nil {
 		t.Fatalf("Failed to initialize data: %v", err)
 	}
-	
+
 	err = d.Save()
 	if err != nil {
 		t.Fatalf("Failed to save data: %v", err)
@@ -65,7 +65,7 @@ func TestRoleAddCommand_Integration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create data: %v", err)
 	}
-	
+
 	err = d.Open()
 	if err != nil {
 		t.Fatalf("Failed to open data: %v", err)
@@ -98,7 +98,7 @@ func TestRoleRemoveCommand_Integration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create data: %v", err)
 	}
-	
+
 	err = d.Open()
 	if err != nil {
 		t.Fatalf("Failed to open data: %v", err)
@@ -114,8 +114,15 @@ func TestRoleListCommand_Integration(t *testing.T) {
 	initializeTestData(t)
 
 	// Add multiple roles
-	roleAddCmd.RunE(roleAddCmd, []string{"web-server"})
-	roleAddCmd.RunE(roleAddCmd, []string{"database"})
+	var err error
+	err = roleAddCmd.RunE(roleAddCmd, []string{"web-server"})
+	if err != nil {
+		t.Fatalf("Failed to add web-server role: %v", err)
+	}
+	err = roleAddCmd.RunE(roleAddCmd, []string{"database"})
+	if err != nil {
+		t.Fatalf("Failed to add database role: %v", err)
+	}
 
 	// Verify roles exist in data
 	cfg := config.New()
@@ -123,7 +130,7 @@ func TestRoleListCommand_Integration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create data: %v", err)
 	}
-	
+
 	err = d.Open()
 	if err != nil {
 		t.Fatalf("Failed to open data: %v", err)
@@ -166,7 +173,7 @@ func TestRoleAddCommand_Duplicate_Integration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create data: %v", err)
 	}
-	
+
 	err = d.Open()
 	if err != nil {
 		t.Fatalf("Failed to open data: %v", err)
@@ -192,7 +199,7 @@ func TestRoleRemoveCommand_NonExistent_Integration(t *testing.T) {
 func TestRoleCommands_JSONOutput_Integration(t *testing.T) {
 	setupTestEnvironment(t)
 	initializeTestData(t)
-	
+
 	// Enable JSON output
 	viper.Set("json", true)
 	OutputJSON = true

@@ -105,10 +105,10 @@ func (rec Logger) TableDumper(option string, writer io.Writer) error {
 		cols = append(cols, element.Message)
 		tabledata = append(tabledata, cols)
 	}
-	table.Bulk(tabledata)
-	table.Render()
-
-	return nil
+	if err := table.Bulk(tabledata); err != nil {
+		return err
+	}
+	return table.Render()
 }
 
 // Dumper outputs selected Logger in either JSON or table format to the writer.
@@ -147,12 +147,12 @@ func (rec *Logger) Add(option, value, engineer, message string) {
 	rec.Records = append(rec.Records, row)
 }
 
-func (rec *Logger) Log(option, value, engineer, message string) {
+func (rec *Logger) Log(option, value, engineer, message string) error {
 	utils.LogStart()
 	defer utils.LogEnd()
 	log.Infof("%s %s %s", option, value, engineer)
 	rec.Add(option, value, engineer, message)
-	rec.Save()
+	return rec.Save()
 }
 
 // Open loads Logger from the specified logfile.

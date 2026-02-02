@@ -33,7 +33,9 @@ func handleLogCmd(cmd *cobra.Command, args []string) {
 
 	cfg := config.New()
 	logh, _ := logger.New(cfg.Logfile)
-	logh.TableDumper(option_name, os.Stdout)
+	if err := logh.TableDumper(option_name, os.Stdout); err != nil {
+		cobra.CheckErr(err)
+	}
 
 }
 

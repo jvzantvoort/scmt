@@ -84,8 +84,14 @@ func TestData_Writer(t *testing.T) {
 	}
 
 	// Add some test data
-	d.Set("TEST", "value", "testuser", "test")
-	d.AddRole("web-server", "testuser", "test role")
+	_, err = d.Set("TEST", "value", "testuser", "test")
+	if err != nil {
+		t.Fatalf("Failed to set test data: %v", err)
+	}
+	_, err = d.AddRole("web-server", "testuser", "test role")
+	if err != nil {
+		t.Fatalf("Failed to add test role: %v", err)
+	}
 
 	var buf bytes.Buffer
 	err = d.Writer(&buf)
@@ -130,8 +136,14 @@ func TestData_Dumper_JSON(t *testing.T) {
 	}
 
 	// Add test data
-	d.Set("TEST1", "value1", "testuser", "test")
-	d.Set("TEST2", "value2", "testuser", "test")
+	_, err = d.Set("TEST1", "value1", "testuser", "test")
+	if err != nil {
+		t.Fatalf("Failed to set TEST1: %v", err)
+	}
+	_, err = d.Set("TEST2", "value2", "testuser", "test")
+	if err != nil {
+		t.Fatalf("Failed to set TEST2: %v", err)
+	}
 
 	var buf bytes.Buffer
 	err = d.Dumper("json", &buf)
@@ -168,7 +180,10 @@ func TestData_Dumper_Table(t *testing.T) {
 	}
 
 	// Add test data
-	d.Set("TEST1", "value1", "testuser", "test message")
+	_, err = d.Set("TEST1", "value1", "testuser", "test message")
+	if err != nil {
+		t.Fatalf("Failed to set test data: %v", err)
+	}
 
 	var buf bytes.Buffer
 	err = d.Dumper("table", &buf)
@@ -177,7 +192,7 @@ func TestData_Dumper_Table(t *testing.T) {
 	}
 
 	output := buf.String()
-	
+
 	// Check that table contains our data
 	if !strings.Contains(output, "TEST1") {
 		t.Errorf("Expected table output to contain 'TEST1', got: %s", output)

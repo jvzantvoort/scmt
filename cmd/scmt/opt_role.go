@@ -24,7 +24,7 @@ var roleAddCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		role := args[0]
-		
+
 		cfg := config.New()
 
 		d, err := data.New(*cfg)
@@ -87,7 +87,7 @@ var roleRemoveCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		role := args[0]
-		
+
 		cfg := config.New()
 
 		d, err := data.New(*cfg)
@@ -189,6 +189,6 @@ func init() {
 	roleCmd.AddCommand(roleAddCmd)
 	roleCmd.AddCommand(roleRemoveCmd)
 	roleCmd.AddCommand(roleListCmd)
-	
+
 	rootCmd.AddCommand(roleCmd)
 }

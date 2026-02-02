@@ -324,9 +324,18 @@ func TestData_SaveAndOpen(t *testing.T) {
 	}
 
 	// Add some data
-	d1.Set("TEST_OPTION", "test_value", "testuser", "test message")
-	d1.AddRole("web-server", "testuser", "test role")
-	d1.AddRole("database", "testuser", "another role")
+	_, err = d1.Set("TEST_OPTION", "test_value", "testuser", "test message")
+	if err != nil {
+		t.Fatalf("Failed to set test option: %v", err)
+	}
+	_, err = d1.AddRole("web-server", "testuser", "test role")
+	if err != nil {
+		t.Fatalf("Failed to add web-server role: %v", err)
+	}
+	_, err = d1.AddRole("database", "testuser", "another role")
+	if err != nil {
+		t.Fatalf("Failed to add database role: %v", err)
+	}
 
 	// Save data
 	err = d1.Save()
