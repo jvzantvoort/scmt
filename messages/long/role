@@ -1,0 +1,11 @@
+Manage server roles with add, remove, and list operations.
+
+The role command allows you to:
+- Add new roles to the server
+- Remove existing roles from the server  
+- List all current server roles
+
+Examples:
+  scmt role add web-server
+  scmt role remove database
+  scmt role list

@@ -25,7 +25,9 @@ var rootCmd = &cobra.Command{
 	Short: messages.GetShort("root"),
 	Long:  messages.GetLong("root"),
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		initConfig()
+		if err := initConfig(); err != nil {
+			return err
+		}
 
 		Configdir = viper.GetString("configdir")
 		Logfile = viper.GetString("logfile")
@@ -66,22 +68,22 @@ func init() {
 
 	// Define flags and bind them to Viper keys
 	rootCmd.PersistentFlags().StringP("configdir", "C", "", "Directory for config files")
-	viper.BindPFlag("configdir", rootCmd.PersistentFlags().Lookup("configdir"))
+	_ = viper.BindPFlag("configdir", rootCmd.PersistentFlags().Lookup("configdir"))
 
 	rootCmd.PersistentFlags().StringP("engineer", "E", "", "Specify engineer name")
-	viper.BindPFlag("engineer", rootCmd.PersistentFlags().Lookup("engineer"))
+	_ = viper.BindPFlag("engineer", rootCmd.PersistentFlags().Lookup("engineer"))
 
 	rootCmd.PersistentFlags().StringP("loglevel", "l", "", "Specify loglevel")
-	viper.BindPFlag("loglevel", rootCmd.PersistentFlags().Lookup("loglevel"))
+	_ = viper.BindPFlag("loglevel", rootCmd.PersistentFlags().Lookup("loglevel"))
 
 	rootCmd.PersistentFlags().StringP("logfile", "L", "", "Specify logfile")
-	viper.BindPFlag("logfile", rootCmd.PersistentFlags().Lookup("logfile"))
+	_ = viper.BindPFlag("logfile", rootCmd.PersistentFlags().Lookup("logfile"))
 
 	rootCmd.PersistentFlags().StringP("message", "M", "", "Specify message")
-	viper.BindPFlag("message", rootCmd.PersistentFlags().Lookup("message"))
+	_ = viper.BindPFlag("message", rootCmd.PersistentFlags().Lookup("message"))
 
 	rootCmd.PersistentFlags().BoolP("json", "J", false, "JSON Output")
-	viper.BindPFlag("json", rootCmd.PersistentFlags().Lookup("json"))
+	_ = viper.BindPFlag("json", rootCmd.PersistentFlags().Lookup("json"))
 
 }
 

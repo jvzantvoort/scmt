@@ -37,7 +37,10 @@ func handleSetCmd(cmd *cobra.Command, args []string) {
 	cfg := config.New()
 
 	if scmto, err := data.New(*cfg); err == nil {
-		scmto.Open()
+		if err := scmto.Open(); err != nil {
+			cobra.CheckErr(err)
+			return
+		}
 
 		err := scmto.SafeSet(option_name, option_value, viper.GetString("engineer"), viper.GetString("message"))
 

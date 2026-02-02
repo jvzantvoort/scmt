@@ -37,6 +37,7 @@ type Data struct {
 	Config         config.Config `json:"-"`
 	logger.Records `json:"-"`    // Embedded logger records for change tracking
 	Elements       []DataElement `json:"elements"`
+	Roles          []string      `json:"roles"`
 }
 
 func (d Data) Get(option string) (*DataElementValue, error) {
@@ -53,12 +54,12 @@ func (d Data) Get(option string) (*DataElementValue, error) {
 }
 
 func (d Data) Log(option, value, engineer, message string) error {
-	log, err := logger.New(d.Config.Logfile)
+	logInstance, err := logger.New(d.Config.Logfile)
 	if err != nil {
 		return err
 	}
-	log.Add(option, value, engineer, message)
-	return log.Save()
+	logInstance.Add(option, value, engineer, message)
+	return logInstance.Save()
 }
 
 func (d *Data) Set(option, value, engineer, message string) (bool, error) {
@@ -79,7 +80,9 @@ func (d *Data) Set(option, value, engineer, message string) (bool, error) {
 				log.Debugf("value is unchanged")
 			} else {
 				log.Debugf("value changed from %s to %s", orgval, value)
-				d.Log(option, value, engineer, message)
+				if err := d.Log(option, value, engineer, message); err != nil {
+					log.Warnf("Failed to log change: %v", err)
+				}
 				d.Elements[i].Value.Value = value
 				d.Elements[i].Value.Engineer = engineer
 				d.Elements[i].Value.Message = message
@@ -99,7 +102,9 @@ func (d *Data) Set(option, value, engineer, message string) (bool, error) {
 		row.Value.Engineer = engineer
 		row.Value.Changed = now
 		row.Value.Message = message
-		d.Log(option, value, engineer, message)
+		if err := d.Log(option, value, engineer, message); err != nil {
+			log.Warnf("Failed to log change: %v", err)
+		}
 		d.Elements = append(d.Elements, row)
 		changed = true
 	}
@@ -133,9 +138,60 @@ func (d *Data) Init(engineer string) error {
 	return nil
 }
 
+// AddRole adds a role to the roles list if it doesn't already exist
+func (d *Data) AddRole(role, engineer, message string) (bool, error) {
+	// Check if role already exists
+	for _, r := range d.Roles {
+		if r == role {
+			return false, nil // Role already exists, no change
+		}
+	}
+
+	// Add the role
+	d.Roles = append(d.Roles, role)
+	if err := d.Log("ROLE_ADD", role, engineer, message); err != nil {
+		log.Warnf("Failed to log role addition: %v", err)
+	}
+	return true, nil
+}
+
+// RemoveRole removes a role from the roles list
+func (d *Data) RemoveRole(role, engineer, message string) (bool, error) {
+	for i, r := range d.Roles {
+		if r == role {
+			// Remove the role by slicing
+			d.Roles = append(d.Roles[:i], d.Roles[i+1:]...)
+			if err := d.Log("ROLE_REMOVE", role, engineer, message); err != nil {
+				log.Warnf("Failed to log role removal: %v", err)
+			}
+			return true, nil
+		}
+	}
+	return false, fmt.Errorf("role %s not found", role)
+}
+
+// ListRoles returns a copy of the roles list
+func (d *Data) ListRoles() []string {
+	roles := make([]string, len(d.Roles))
+	copy(roles, d.Roles)
+	return roles
+}
+
+// HasRole checks if a role exists in the roles list
+func (d *Data) HasRole(role string) bool {
+	for _, r := range d.Roles {
+		if r == role {
+			return true
+		}
+	}
+	return false
+}
+
 func New(cfg config.Config) (*Data, error) {
 	retv := &Data{}
 	retv.Config = cfg
+	retv.Elements = make([]DataElement, 0)
+	retv.Roles = make([]string, 0)
 	return retv, nil
 
 }

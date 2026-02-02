@@ -1,0 +1,22 @@
+Process template file using server configuration data and roles.
+
+The write command takes a template file and processes it using Go's text/template
+engine, substituting configuration parameters and roles from the server data.
+
+Template Syntax:
+  {{.Config.OPTION_NAME}}     - Access configuration parameters
+  {{.Roles}}                  - Access roles array
+  {{range .Roles}}...{{end}}  - Iterate over roles
+  {{.HasRole "role-name"}}    - Check if role exists
+
+Available Data:
+  .Config     - Map of all configuration parameters
+  .Roles      - Array of assigned server roles  
+  .HasRole    - Function to check if a role exists
+  .Timestamp  - Current timestamp
+  .Engineer   - Current engineer name
+
+Examples:
+  scmt write template.conf
+  scmt write template.conf output.conf
+  scmt write /path/to/template.yml /etc/myapp/config.yml

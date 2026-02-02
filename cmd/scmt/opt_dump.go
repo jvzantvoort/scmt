@@ -25,12 +25,18 @@ func handleDumpCmd(cmd *cobra.Command, args []string) {
 	cfg := config.New()
 
 	if scmto, err := data.New(*cfg); err == nil {
-		scmto.Open()
+		if err := scmto.Open(); err != nil {
+			log.Errorf("Failed to open data: %v", err)
+			return
+		}
 		if cfg.OutputJSON {
-			scmto.Dumper("json", os.Stdout)
-
+			if err := scmto.Dumper("json", os.Stdout); err != nil {
+				log.Errorf("Failed to dump JSON: %v", err)
+			}
 		} else {
-			scmto.Dumper("table", os.Stdout)
+			if err := scmto.Dumper("table", os.Stdout); err != nil {
+				log.Errorf("Failed to dump table: %v", err)
+			}
 		}
 	}
 }
