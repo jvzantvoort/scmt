@@ -4,7 +4,11 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.1.0-brightgreen.svg)](https://github.com/jvzantvoort/scmt/releases)
 
-SCMT (Server Configuration Management Tool) is a command-line utility for managing server configuration parameters and roles with full audit logging and change tracking. It provides a simple yet powerful interface for maintaining server metadata, configuration values, and role assignments.
+SCMT (Server Configuration Management Tool) is a command-line
+utility for managing server configuration parameters and roles with
+full audit logging and change tracking. It provides a simple yet
+powerful interface for maintaining server metadata, configuration
+values, and role assignments.
 
 ## 🚀 Features
 
@@ -361,35 +365,6 @@ scmt -E "Alice Smith" -M "Quarterly security update" set PATCH_LEVEL "2024.Q1"
 
 # Track who changed what
 scmt log PATCH_LEVEL
-```
-
-### Template Processing
-
-```bash
-# Create a server configuration template
-cat > server.template << 'EOF'
-# Server: {{.Config.TYPE}}
-# Owner: {{.Config.OWNER}} 
-# Generated: {{.Timestamp}} by {{.Engineer}}
-
-[server]
-type = "{{.Config.TYPE}}"
-environment = "{{if .Config.ENVIRONMENT}}{{.Config.ENVIRONMENT}}{{else}}development{{end}}"
-
-[roles]
-{{range .Roles}}
-{{.}} = true
-{{end}}
-
-{{if .HasRole "web-server"}}
-[web]
-port = 8080
-enabled = true
-{{end}}
-EOF
-
-# Process template with current server data
-scmt write server.template /etc/myapp/server.conf
 ```
 
 ### Template Processing

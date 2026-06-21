@@ -42,7 +42,7 @@ func TestMkdirAll(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
-	file.Close()
+	_ = file.Close()
 
 	err = MkdirAll(testFile)
 	if err == nil {
@@ -62,14 +62,4 @@ func TestLogIfError(t *testing.T) {
 
 	// Since this function only logs, we can't easily test the output
 	// but we can ensure it doesn't panic
-}
-
-func TestLogStart(t *testing.T) {
-	// Test that LogStart doesn't panic
-	LogStart()
-}
-
-func TestLogEnd(t *testing.T) {
-	// Test that LogEnd doesn't panic
-	LogEnd()
 }

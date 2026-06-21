@@ -39,7 +39,7 @@ func TestData_ConfigFile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
-	file.Close()
+	_ = file.Close()
 
 	// Test with existing file
 	configFile, found = d.ConfigFile()

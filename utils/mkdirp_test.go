@@ -71,7 +71,7 @@ func TestMkdirAllFileExists(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create test file: %v", err)
 	}
-	f.Close()
+	_ = f.Close()
 
 	// Try to create a directory with the same name as the file
 	err = MkdirAll(testfile)

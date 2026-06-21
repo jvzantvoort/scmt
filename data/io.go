@@ -59,7 +59,8 @@ func (d Data) Dumper(outputtype string, writer io.Writer) error {
 		mdata[element.Option] = element.Value.Value
 	}
 
-	if outputtype == "json" {
+	switch outputtype {
+	case "json":
 		content, err := json.MarshalIndent(mdata, "", "  ")
 		if err == nil {
 			_, err := fmt.Fprintf(writer, "%s\n", string(content))
@@ -67,7 +68,7 @@ func (d Data) Dumper(outputtype string, writer io.Writer) error {
 				return err
 			}
 		}
-	} else if outputtype == "table" {
+	case "table":
 		table := tablewriter.NewWriter(writer)
 		table.Header([]string{"Name", "Value", "Engineer", "Changed", "Message"})
 		tabledata := [][]string{}
@@ -85,7 +86,6 @@ func (d Data) Dumper(outputtype string, writer io.Writer) error {
 			return err
 		}
 		return table.Render()
-
 	}
 
 	return nil
@@ -148,6 +148,6 @@ func (data Data) Save() error {
 		utils.Errorf("cannot open project file for writing: %s", err)
 		return err
 	}
-	defer filehandle.Close()
+	defer func() { _ = filehandle.Close() }()
 	return data.Writer(filehandle)
 }

@@ -176,7 +176,7 @@ func (rec *Logger) Open() error {
 	if err != nil {
 		return err
 	}
-	defer filehandle.Close()
+	defer func() { _ = filehandle.Close() }()
 
 	return rec.Reader(filehandle)
 }
@@ -190,7 +190,7 @@ func (rec Logger) Save() error {
 	if err != nil {
 		return err
 	}
-	defer filehandle.Close()
+	defer func() { _ = filehandle.Close() }()
 	return rec.Writer(filehandle)
 }
 
