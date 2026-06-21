@@ -1,3 +1,5 @@
+// Package config handles configuration management for SCMT,
+// including loading from environment variables, config files, and flags.
 package config
 
 import (
@@ -6,13 +8,16 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Config represents the runtime configuration for SCMT.
 type Config struct {
-	Configdir      string
-	ConfigDatafile string
-	Logfile        string
-	OutputJSON     bool
+	Configdir      string // Directory where configuration data is stored
+	ConfigDatafile string // Full path to the data.json configuration file
+	Logfile        string // Path to the audit log file
+	OutputJSON     bool   // Whether to output in JSON format
 }
 
+// New creates a new Config instance by reading values from Viper.
+// It loads configuration from environment variables, config files, and command-line flags.
 func New() *Config {
 	retv := &Config{}
 

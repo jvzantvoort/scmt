@@ -1,3 +1,5 @@
+// Package main is the entry point for the SCMT (Server Configuration Management Tool) CLI application.
+// It implements the Cobra command framework for managing server configuration variables.
 package main
 
 import (
@@ -11,12 +13,13 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Global configuration variables populated from flags and config files
 var (
-	Configdir  string
-	Logfile    string
-	Engineer   string
-	Message    string
-	OutputJSON bool
+	Configdir  string // Directory where configuration data is stored
+	Logfile    string // Path to the audit log file
+	Engineer   string // Name of the engineer making changes
+	Message    string // Reason/message for the change
+	OutputJSON bool   // Whether to output in JSON format
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -87,6 +90,7 @@ func init() {
 
 }
 
+// setLogLevel sets the Logrus logging level based on the provided string value.
 func setLogLevel(loglevel string) {
 	if len(loglevel) == 0 {
 		log.Debugf("loglevel is empty")
@@ -111,7 +115,8 @@ func setLogLevel(loglevel string) {
 
 }
 
-// initConfig reads in config file and ENV variables if set.
+// initConfig reads in config file from the home directory and sets up environment variable support.
+// Configuration can come from (in order of precedence): environment variables, config file, or defaults.
 func initConfig() error {
 	// get current User
 	user_obj, err := user.Current()

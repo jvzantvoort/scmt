@@ -1,3 +1,5 @@
+// Package data provides I/O operations for persisting and retrieving
+// configuration data in JSON format, with support for both file-based and stream operations.
 package data
 
 import (
@@ -11,6 +13,7 @@ import (
 	"github.com/jvzantvoort/scmt/utils"
 )
 
+// ConfigFile returns the path to the configuration data file and whether it exists.
 func (data Data) ConfigFile() (string, bool) {
 	configfile := data.Config.ConfigDatafile
 	found := true
@@ -23,11 +26,13 @@ func (data Data) ConfigFile() (string, bool) {
 
 }
 
+// ConfigDir returns the configuration directory path.
 func (data Data) ConfigDir() string {
 	return data.Config.Configdir
 
 }
 
+// Writer serializes the Data structure as JSON and writes it to the provided writer.
 func (d Data) Writer(writer io.Writer) error {
 	utils.LogStart()
 	defer utils.LogEnd()
@@ -43,6 +48,7 @@ func (d Data) Writer(writer io.Writer) error {
 
 }
 
+// Dumper outputs configuration data in the specified format (json or table) to the provided writer.
 func (d Data) Dumper(outputtype string, writer io.Writer) error {
 	utils.LogStart()
 	defer utils.LogEnd()
@@ -85,7 +91,7 @@ func (d Data) Dumper(outputtype string, writer io.Writer) error {
 	return nil
 }
 
-// Read session content from a [io.Reader] object.
+// Reader deserializes JSON data from the provided reader into the Data structure.
 func (data *Data) Reader(reader io.Reader) error {
 	utils.LogStart()
 	defer utils.LogEnd()
@@ -101,6 +107,7 @@ func (data *Data) Reader(reader io.Reader) error {
 	return nil
 }
 
+// Open loads configuration data from the data file into the Data structure.
 func (data *Data) Open() error {
 	utils.LogStart()
 	defer utils.LogEnd()
@@ -121,7 +128,8 @@ func (data *Data) Open() error {
 
 }
 
-// Write session configuration to a projectfile
+// Save persists the Data structure to the configuration data file.
+// It creates a backup of the existing file before writing the new data.
 func (data Data) Save() error {
 	utils.LogStart()
 	defer utils.LogEnd()

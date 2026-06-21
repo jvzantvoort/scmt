@@ -1,3 +1,4 @@
+// Package main is the entry point for the SCMT (Server Configuration Management Tool) CLI application.
 package main
 
 import (
@@ -12,7 +13,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// SetCmd represents the type command
+// SetCmd represents the set command for updating configuration variables
 var SetCmd = &cobra.Command{
 	Use:   messages.GetUse("set"),
 	Short: messages.GetShort("set"),
@@ -20,7 +21,8 @@ var SetCmd = &cobra.Command{
 	Run:   handleSetCmd,
 }
 
-// handleSetCmd handles the project create command
+// handleSetCmd updates a configuration variable with the provided value and metadata.
+// Usage: set <option_name> <option_value>
 func handleSetCmd(cmd *cobra.Command, args []string) {
 	log.Debugf("%s: start", cmd.Use)
 	defer log.Debugf("%s: end", cmd.Use)

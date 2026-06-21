@@ -1,3 +1,4 @@
+// Package main is the entry point for the SCMT (Server Configuration Management Tool) CLI application.
 package main
 
 import (
@@ -8,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// InitCmd represents the type command
+// InitCmd represents the init command for initializing a new configuration
 var InitCmd = &cobra.Command{
 	Use:   messages.GetUse("init"),
 	Short: messages.GetShort("init"),
@@ -16,7 +17,7 @@ var InitCmd = &cobra.Command{
 	Run:   handleInitCmd,
 }
 
-// handleInitCmd handles the project create command
+// handleInitCmd initializes a new configuration with default values and saves it to disk.
 func handleInitCmd(cmd *cobra.Command, args []string) {
 	log.Debugf("%s: start", cmd.Use)
 	defer log.Debugf("%s: end", cmd.Use)

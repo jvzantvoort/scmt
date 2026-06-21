@@ -1,3 +1,4 @@
+// Package main is the entry point for the SCMT (Server Configuration Management Tool) CLI application.
 package main
 
 import (
@@ -10,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// DumpCmd represents the type command
+// DumpCmd represents the dump command for displaying all configuration variables
 var DumpCmd = &cobra.Command{
 	Use:   messages.GetUse("dump"),
 	Short: messages.GetShort("dump"),
@@ -18,7 +19,7 @@ var DumpCmd = &cobra.Command{
 	Run:   handleDumpCmd,
 }
 
-// handleDumpCmd handles the project create command
+// handleDumpCmd displays all configuration variables in the specified output format.
 func handleDumpCmd(cmd *cobra.Command, args []string) {
 	log.Debugf("%s: start", cmd.Use)
 	defer log.Debugf("%s: end", cmd.Use)

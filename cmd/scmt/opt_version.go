@@ -1,3 +1,4 @@
+// Package main is the entry point for the SCMT (Server Configuration Management Tool) CLI application.
 package main
 
 import (
@@ -7,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// VersionCmd represents the type command
+// VersionCmd represents the version command
 var VersionCmd = &cobra.Command{
 	Use:   messages.GetUse("version"),
 	Short: messages.GetShort("version"),
@@ -15,7 +16,7 @@ var VersionCmd = &cobra.Command{
 	Run:   handleVersionCmd,
 }
 
-// handleVersionCmd handles the project create command
+// handleVersionCmd displays the application version.
 func handleVersionCmd(cmd *cobra.Command, args []string) {
 	fmt.Println(messages.GetVersion())
 
