@@ -1,3 +1,5 @@
+// Package utils provides utility functions for logging, directory creation,
+// and other common operations used throughout the application.
 package utils
 
 import (
@@ -8,6 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// LogIfError logs an error if the provided message is not nil.
 func LogIfError(msg interface{}) {
 	if msg == nil {
 		return
@@ -32,6 +35,8 @@ func LogEnd() {
 	log.Debugf("%s: end", elements[len(elements)-1])
 }
 
+// LogArgument logs a function argument with its name and value.
+// Uses runtime introspection to automatically determine the calling function name.
 func LogArgument(name, input interface{}) {
 
 	pc, _, _, _ := runtime.Caller(1)
@@ -42,6 +47,8 @@ func LogArgument(name, input interface{}) {
 
 }
 
+// LogVariable logs a variable with its name and value.
+// Uses runtime introspection to automatically determine the calling function name.
 func LogVariable(name, input interface{}) {
 
 	pc, _, _, _ := runtime.Caller(1)

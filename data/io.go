@@ -1,3 +1,5 @@
+// Package data provides I/O operations for persisting and retrieving
+// configuration data in JSON format, with support for both file-based and stream operations.
 package data
 
 import (
@@ -11,6 +13,7 @@ import (
 	"github.com/jvzantvoort/scmt/utils"
 )
 
+// ConfigFile returns the path to the configuration data file and whether it exists.
 func (data Data) ConfigFile() (string, bool) {
 	configfile := data.Config.ConfigDatafile
 	found := true
@@ -23,11 +26,13 @@ func (data Data) ConfigFile() (string, bool) {
 
 }
 
+// ConfigDir returns the configuration directory path.
 func (data Data) ConfigDir() string {
 	return data.Config.Configdir
 
 }
 
+// Writer serializes the Data structure as JSON and writes it to the provided writer.
 func (d Data) Writer(writer io.Writer) error {
 	utils.LogStart()
 	defer utils.LogEnd()
@@ -43,6 +48,7 @@ func (d Data) Writer(writer io.Writer) error {
 
 }
 
+// Dumper outputs configuration data in the specified format (json or table) to the provided writer.
 func (d Data) Dumper(outputtype string, writer io.Writer) error {
 	utils.LogStart()
 	defer utils.LogEnd()
@@ -53,7 +59,8 @@ func (d Data) Dumper(outputtype string, writer io.Writer) error {
 		mdata[element.Option] = element.Value.Value
 	}
 
-	if outputtype == "json" {
+	switch outputtype {
+	case "json":
 		content, err := json.MarshalIndent(mdata, "", "  ")
 		if err == nil {
 			_, err := fmt.Fprintf(writer, "%s\n", string(content))
@@ -61,7 +68,7 @@ func (d Data) Dumper(outputtype string, writer io.Writer) error {
 				return err
 			}
 		}
-	} else if outputtype == "table" {
+	case "table":
 		table := tablewriter.NewWriter(writer)
 		table.Header([]string{"Name", "Value", "Engineer", "Changed", "Message"})
 		tabledata := [][]string{}
@@ -79,13 +86,12 @@ func (d Data) Dumper(outputtype string, writer io.Writer) error {
 			return err
 		}
 		return table.Render()
-
 	}
 
 	return nil
 }
 
-// Read session content from a [io.Reader] object.
+// Reader deserializes JSON data from the provided reader into the Data structure.
 func (data *Data) Reader(reader io.Reader) error {
 	utils.LogStart()
 	defer utils.LogEnd()
@@ -101,6 +107,7 @@ func (data *Data) Reader(reader io.Reader) error {
 	return nil
 }
 
+// Open loads configuration data from the data file into the Data structure.
 func (data *Data) Open() error {
 	utils.LogStart()
 	defer utils.LogEnd()
@@ -121,7 +128,8 @@ func (data *Data) Open() error {
 
 }
 
-// Write session configuration to a projectfile
+// Save persists the Data structure to the configuration data file.
+// It creates a backup of the existing file before writing the new data.
 func (data Data) Save() error {
 	utils.LogStart()
 	defer utils.LogEnd()
@@ -140,6 +148,6 @@ func (data Data) Save() error {
 		utils.Errorf("cannot open project file for writing: %s", err)
 		return err
 	}
-	defer filehandle.Close()
+	defer func() { _ = filehandle.Close() }()
 	return data.Writer(filehandle)
 }

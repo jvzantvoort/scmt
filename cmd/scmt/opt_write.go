@@ -157,7 +157,7 @@ func processTemplate(templateFile, outputFile string, data *TemplateData) error 
 		if err != nil {
 			return fmt.Errorf("failed to create output file %s: %w", outputFile, err)
 		}
-		defer outputWriter.Close()
+		defer func() { _ = outputWriter.Close() }()
 		writer = outputWriter
 		log.Debugf("Writing template output to %s", outputFile)
 	}

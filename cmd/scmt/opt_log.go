@@ -1,3 +1,4 @@
+// Package main is the entry point for the SCMT (Server Configuration Management Tool) CLI application.
 package main
 
 import (
@@ -11,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// LogCmd represents the type command
+// LogCmd represents the log command for displaying audit log history
 var LogCmd = &cobra.Command{
 	Use:   messages.GetUse("log"),
 	Short: messages.GetShort("log"),
@@ -19,7 +20,8 @@ var LogCmd = &cobra.Command{
 	Run:   handleLogCmd,
 }
 
-// handleLogCmd handles the project create command
+// handleLogCmd displays the audit log history for a specific configuration variable.
+// Usage: log <option_name>
 func handleLogCmd(cmd *cobra.Command, args []string) {
 	log.Debugf("%s: start", cmd.Use)
 	defer log.Debugf("%s: end", cmd.Use)

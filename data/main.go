@@ -1,3 +1,5 @@
+// Package data provides core data structures and operations for managing
+// server configuration variables with change tracking and persistence.
 package data
 
 import (
@@ -9,6 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// defaultData contains the initial configuration values set during initialization
 var (
 	defaultData = map[string]string{
 		"TYPE":           "server",
@@ -21,18 +24,21 @@ var (
 	}
 )
 
+// DataElementValue contains the metadata for a configuration value
 type DataElementValue struct {
-	Value    string    `json:"value"`
-	Engineer string    `json:"engineer"`
-	Message  string    `json:"message"`
-	Changed  time.Time `json:"changed"`
+	Value    string    `json:"value"`    // The actual configuration value
+	Engineer string    `json:"engineer"` // Name of engineer who set this value
+	Message  string    `json:"message"`  // Reason for the change
+	Changed  time.Time `json:"changed"`  // When the value was last changed
 }
 
+// DataElement represents a single configuration option with its current value and metadata
 type DataElement struct {
-	Option string           `json:"option"`
-	Value  DataElementValue `json:"value"`
+	Option string           `json:"option"` // Configuration variable name
+	Value  DataElementValue `json:"value"`  // Current value and metadata
 }
 
+// Data represents the complete configuration state
 type Data struct {
 	Config         config.Config `json:"-"`
 	logger.Records `json:"-"`    // Embedded logger records for change tracking
@@ -40,6 +46,8 @@ type Data struct {
 	Roles          []string      `json:"roles"`
 }
 
+// Get retrieves the value metadata for a given configuration option.
+// Returns an error if the option is not found.
 func (d Data) Get(option string) (*DataElementValue, error) {
 	retv := &DataElementValue{}
 
@@ -53,6 +61,7 @@ func (d Data) Get(option string) (*DataElementValue, error) {
 	return retv, fmt.Errorf("option %s not found", option)
 }
 
+// Log records a change to the audit log file.
 func (d Data) Log(option, value, engineer, message string) error {
 	logInstance, err := logger.New(d.Config.Logfile)
 	if err != nil {
@@ -62,6 +71,9 @@ func (d Data) Log(option, value, engineer, message string) error {
 	return logInstance.Save()
 }
 
+// Set updates a configuration option with a new value and metadata.
+// Returns true if the value was changed, false if it was unchanged.
+// If the option doesn't exist, it will be created.
 func (d *Data) Set(option, value, engineer, message string) (bool, error) {
 	log.Debugf("Set %s to %s, start", option, value)
 	defer log.Debugf("Set %s to %s, end", option, value)
@@ -112,6 +124,7 @@ func (d *Data) Set(option, value, engineer, message string) (bool, error) {
 	return changed, nil
 }
 
+// SafeSet updates a configuration option and saves the data to disk if changed.
 func (d *Data) SafeSet(option, value, engineer, message string) error {
 	log.Debugf("Set %s to %s, start", option, value)
 	defer log.Debugf("Set %s to %s, end", option, value)
@@ -125,6 +138,7 @@ func (d *Data) SafeSet(option, value, engineer, message string) error {
 	return nil
 }
 
+// Init initializes the Data structure with default configuration values.
 func (d *Data) Init(engineer string) error {
 	log.Debugf("Init data structure, start")
 	defer log.Debugf("Init data structure, end")
